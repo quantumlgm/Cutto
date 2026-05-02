@@ -11,7 +11,11 @@ from .models import Links
 
 router = APIRouter()
     
-@router.get('/all')
+@router.get(
+    '/all',
+    tags=['Statistics'],
+    summary='Get all links',
+)
 async def all(
     db: AsyncSession = Depends(get_db)
 ):
@@ -19,15 +23,18 @@ async def all(
         query = await db.execute(select(Links))
         item = query.scalars().all()
         if not item:
-            raise HTTPException(status_code=404, detail='Список ссылок пуст')
+            raise HTTPException(status_code=404, detail='No links found')
         return item
     except Exception as e:
         print(f'Ошибка при получении всех ссылок: {e}')
-        raise HTTPException(status_code=500, detail="Ошибка сервера")
+        raise HTTPException(status_code=500, detail="Internal server error")
     
-    
-@router.get('/liderboard')
-async def liderboard(
+@router.get(
+    '/leaderboard',
+    tags=['Statistics'],
+    summary='Get most popular links'
+)
+async def leaderboard(
     db: AsyncSession = Depends(get_db)
 ):
     try:
@@ -37,13 +44,17 @@ async def liderboard(
         )
         item = query.scalars().all()
         if not item:
-            raise HTTPException(status_code=404, detail='Список ссылок пуст') 
+            raise HTTPException(status_code=404, detail='No links found') 
         return item
     except Exception as e:
-        print(f'Ошибка сервера: {e}')
-        raise HTTPException(status_code=500, detail="Ошибка сервера")
+        print(f'Server error: {e}')
+        raise HTTPException(status_code=500, detail="Internal server error")
     
-@router.get('/{link}')
+@router.get(
+    '/{link}',
+    tags=['Links'],
+    summary="Redirect from short link"
+)
 async def get_link(
     link: str,
     db: AsyncSession = Depends(get_db)
@@ -52,15 +63,19 @@ async def get_link(
         query = await db.execute(select(Links).where(Links.shortened == link))
         item = query.scalar_one_or_none()
         if not item:
-            raise HTTPException(status_code=404, detail='Ссылка не найдена')    
+            raise HTTPException(status_code=404, detail='No links found')    
         item.clicks += 1
         await db.commit()     
         return RedirectResponse(url=item.original)
     except Exception as e:
-        print(f'Ошибка сервера: {e}')
-        raise HTTPException(status_code=500, detail="Ошибка сервера")
+        print(f'Server error: {e}')
+        raise HTTPException(status_code=500, detail="Internal server error")
     
-@router.post('/shorten')
+@router.post(
+    '/shorten',
+    tags=['Create'],
+    summary="Create a short link"
+)
 async def add_shorten(
     link: CheckUrl,
     db: AsyncSession = Depends(get_db)
@@ -82,10 +97,14 @@ async def add_shorten(
             await db.rollback()
         except Exception as e:
             await db.rollback()
-            print(f"Критическая ошибка: {e}")
-            raise HTTPException(status_code=500, detail="Ошибка сервера")
+            print(f"Server error: {e}")
+            raise HTTPException(status_code=500, detail="Internal server error")
 
-@router.post('/personal')
+@router.post(    
+    '/personal',
+    tags=['Create'],
+    summary="Create a personal link"
+)
 async def add_personal(
     data: CheckCreate,
     db: AsyncSession = Depends(get_db)
@@ -106,15 +125,19 @@ async def add_personal(
         await db.rollback()
         raise HTTPException(
             status_code=409,
-            detail=f"Сокращение '{data.text}' уже занято. Выберите другое."
+            detail=f"The short link '{data.text}' is already taken. Please choose another one"
         )
     except Exception as e:
         await db.rollback()
-        print(f"Критическая ошибка: {e}")
-        raise HTTPException(status_code=500, detail="Ошибка сервера")
+        print(f"Server error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
     
-@router.post('/delete/{id}')
+@router.post(
+    '/delete/{id}',
+    tags=['Links'],
+    summary="Delete link"
+)
 async def delete(
     id: int,
     db: AsyncSession = Depends(get_db)
@@ -124,7 +147,7 @@ async def delete(
     if not item:            
         raise HTTPException(
             status_code=404,
-            detail=f"Ссылка с id:{id} не найдена"
+            detail=f"The link with id:{id} was not found"
         )
     try:
         await db.delete(item)
@@ -132,13 +155,17 @@ async def delete(
         return {
             'status': 200,
             'result': item,
-            'message': 'Успешно удалено'
+            'message': 'Successfuly deleted'
         }
     except Exception:
         await db.rollback()
-        raise HTTPException(status_code=500, detail="Ошибка при удалении из базы данных")
+        raise HTTPException(status_code=500, detail="Failed to delete from the database")
     
-@router.post('/update')
+@router.patch(
+    '/update',
+    tags=['Links'],
+    summary='Update link'
+)
 async def update(
     data: Update,
     db: AsyncSession = Depends(get_db)
@@ -148,7 +175,7 @@ async def update(
     if not item:            
         raise HTTPException(
             status_code=404,
-            detail=f"Ссылка с id:{data.id} не найдена"
+            detail=f"Link with id:{data.id} not found"
         )
     try:
         item.original = str(data.url)
@@ -157,11 +184,11 @@ async def update(
         return {
             'status': 200,
             'result': item,
-            'message': 'Успешно обновлено'
+            'message': 'Succesfuly updated'
         }
     except Exception:
         await db.rollback()
-        raise HTTPException(status_code=500, detail="Ошибка при обновлении из базы данных")
+        raise HTTPException(status_code=500, detail="Error while updating from the database")
 
 
     
