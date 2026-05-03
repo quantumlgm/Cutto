@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASS: str
     DB_NAME: str
+    ALLOW_ORIGINS: list[str]
     
     @property
     def DB_URL_asyncpg(self) -> str:

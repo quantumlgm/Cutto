@@ -1,18 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from scalar_fastapi import get_scalar_api_reference
-from .endpoints import router
+
+from .routers.links import router_link 
+from .routers.qr import router_qr
+from .config import settings
 
 app = FastAPI()
-app.include_router(router)
-
-allowed = [
-    "http://localhost:3000"
-]
+app.include_router(router_link)
+app.include_router(router_qr)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed,
+    allow_origins=settings.ALLOW_ORIGINS,
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*']
