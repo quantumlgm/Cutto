@@ -12,12 +12,12 @@ class CheckTemporary(CheckUrl):
 class Update(CheckUrl):
     id: int
 
-class CreateQr(CheckUrl):
+class CreateQr(BaseModel):
+    url: str
     fill_color: str = "#000000"
     back_color: str = "#FFFFFF"
-    gradient_type: str | None 
-    gradient_color: str | None 
+    gradient_type: str | None = None
+    gradient_color: str | None = None
     dots_style: str = "square" 
     eye_style: str = 'square'
     border_style: str = "square"
-    logo_enabled: bool = False

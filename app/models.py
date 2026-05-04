@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import func, JSON
+from sqlalchemy import func, JSON, LargeBinary
 from datetime import datetime
 
 class Base(DeclarativeBase):

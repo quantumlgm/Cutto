@@ -5,9 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select, func
 from datetime import datetime, timedelta
 import qrcode
-
 import io
-import qrcode
 from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.colormasks import (
     SolidFillColorMask, RadialGradiantColorMask, HorizontalGradiantColorMask
@@ -16,10 +14,11 @@ from qrcode.image.styles.moduledrawers import (
     RoundedModuleDrawer, CircleModuleDrawer, GappedSquareModuleDrawer, SquareModuleDrawer
 )
 from qrcode.image.styles.colormasks import SolidFillColorMask
-from PIL import ImageColor
+from PIL import ImageColor, Image
 
 from ..database import get_db
 from ..schemas import CreateQr
+from ..models import Links
 
 router_qr = APIRouter()
 
@@ -28,12 +27,21 @@ async def qreate_qr(
     data: CreateQr,
     db: AsyncSession = Depends(get_db)
 ):
+    url_str = str(data.url)
     qr = qrcode.QRCode(
         error_correction=qrcode.constants.ERROR_CORRECT_H,
         box_size=10,
         border=4
     )
-    qr.add_data(str(data.url))
+    
+    check = await db.execute(select(Links).where(Links.shortened == url_str))
+    check_res = check.scalar_one_or_none()
+    if check_res:
+        target_url = f"https://yourdomain.com/{check_res.shortened}"
+    else:
+        target_url = url_str
+
+    qr.add_data(target_url)
 
     match getattr(data, 'eye_style', 'square'):
         case 'rounded': selected_drawer = RoundedModuleDrawer()
@@ -48,7 +56,9 @@ async def qreate_qr(
 
     rgb_fill = ImageColor.getcolor(data.fill_color, "RGB")
     rgb_back = ImageColor.getcolor(data.back_color, "RGB")
-    gradient_color = ImageColor.getcolor(data.gradient_color, "RGB")
+    
+    raw_grad_color = data.gradient_color if data.gradient_color else "#000000"
+    gradient_color = ImageColor.getcolor(raw_grad_color, "RGB")
 
     match getattr(data, 'gradient_type', None):
         case "radial":
@@ -67,13 +77,13 @@ async def qreate_qr(
             selected_mask = SolidFillColorMask(
                 front_color=rgb_fill, 
                 back_color=rgb_back
-            )
+            )        
 
     img = qr.make_image(
         image_factory=StyledPilImage,
         module_drawer=selected_drawer,
         eye_drawer=selected_eye_drawer,   
-        color_mask=selected_mask       
+        color_mask=selected_mask,
     )
 
     buf = io.BytesIO()

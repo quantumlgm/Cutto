@@ -10,6 +10,7 @@ import secrets
 from ..schemas import CheckUrl, CheckCreate, Update, CheckTemporary
 from ..database import get_db
 from ..models import Links
+from ..functions import scheduler, task_expire
 
 router_link = APIRouter()
     
@@ -71,8 +72,6 @@ async def get_link(
         item = query.scalar_one_or_none()
         if not item:
             raise HTTPException(status_code=404, detail='No links found')    
-        if item.expire_at and datetime.now() > item.expire_at:
-            raise HTTPException(status_code=404, detail='Time is up')
         item.clicks += 1
         await db.commit()     
         return RedirectResponse(url=item.original)
@@ -163,6 +162,13 @@ async def temporary_link(
             )   
             db.add(item)            
             await db.commit()
+            await db.refresh(item)
+            scheduler.add_job(
+                task_expire, 
+                trigger='date',
+                run_date=item.expire_at,
+                args=[item.id]
+            )
             return {
                 'original': data.url,
                 'shortened': short_link,
