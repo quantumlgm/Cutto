@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 import secrets
 
-from ..schemas import CheckUrl, CheckCreate, Update, CheckTemporary
+from ..schemas import CheckUrl, CheckCreate, Update, CheckTemporary, CheckAll
 from ..database import get_db
 from ..models import Links
 from ..functions import scheduler, task_expire
@@ -15,7 +15,7 @@ from ..functions import scheduler, task_expire
 router_link = APIRouter()
     
 @router_link.get(
-    '/all',
+    '/get/all',
     tags=['Statistics'],
     summary='Get all links',
 )
@@ -24,6 +24,27 @@ async def all(
 ):
     try:
         query = await db.execute(select(Links))
+        item = query.scalars().all()
+        if not item:
+            raise HTTPException(status_code=404, detail='No links found')
+        return item
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f'Server error: {e}')
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+@router_link.get(
+    '/get/{id}',
+    tags=['Statistics'],
+    summary='Get links for a specific user',
+)
+async def get_by_user(
+    id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        query = await db.execute(select(Links).where(Links.owner_id == id))
         item = query.scalars().all()
         if not item:
             raise HTTPException(status_code=404, detail='No links found')
@@ -84,109 +105,58 @@ async def get_link(
 @router_link.post(
     '/shorten',
     tags=['Create'],
-    summary="Create a short link"
+    summary="Universal short link creator"
 )
-async def add_shorten(
-    data: CheckUrl,
+async def add_link(
+    data: CheckAll,
     db: AsyncSession = Depends(get_db)
 ):
-    while True: 
-        try:
-            short_link = secrets.token_urlsafe(4)[:5] 
-            item = Links(
-                original=str(data.url),
-                shortened=short_link
-            )
-            db.add(item)            
-            await db.commit()
-            return {
-                'original': data.url,
-                'shortened': short_link,
-            }
-        except IntegrityError:
-            await db.rollback()
-        except Exception as e:
-            await db.rollback()
-            print(f"Server error: {e}")
-            raise HTTPException(status_code=500, detail="Internal server error")
+    final_short_link = None
+    expire_date = None
 
-@router_link.post(    
-    '/personal',
-    tags=['Create'],
-    summary="Create a personal link"
-)
-async def add_personal(
-    data: CheckCreate,
-    db: AsyncSession = Depends(get_db)
-):
-    new_link = Links(
-        original=str(data.url),
-        shortened=data.text
-    )
-    try:            
+    if data.text:    
+        query = await db.execute(select(Links).where(Links.shortened == data.text))
+        if query.scalar_one_or_none():
+            raise HTTPException(status_code=409, detail="Short name already taken")
+        final_short_link = data.text
+
+    if data.time:
+        expire_date = datetime.now() + timedelta(hours=data.time)
+
+    if not final_short_link:
+        while True:
+            temp_code = secrets.token_urlsafe(4)[:5]
+            check_code = await db.execute(select(Links).where(Links.shortened == temp_code))
+            if not check_code.scalar_one_or_none():
+                final_short_link = temp_code
+                break
+    try:
+        new_link = Links(
+            original=str(data.url),
+            shortened=final_short_link,
+            expire_at=expire_date,        
+        )
         db.add(new_link)
         await db.commit()
-        return {
-            'original': data.url,
-            'short': data.text,
-            data.url: data.text
-        }                
-    except IntegrityError:
-        await db.rollback()
-        raise HTTPException(
-            status_code=409,
-            detail=f"The short link '{data.text}' is already taken. Please choose another one"
-        )
-    except Exception as e:
-        await db.rollback()
-        print(f"Server error: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
-    
-@router_link.post(    
-    '/temporary',
-    tags=['Create'],
-    summary="Create a temporary link"
-)
-async def temporary_link(
-    data: CheckTemporary,
-    db: AsyncSession = Depends(get_db)
-):
-    while True: 
-        try:
-            short_link = secrets.token_urlsafe(4)[:5] 
-            expire_date = datetime.now() + timedelta(hours=data.time)
-            item = Links(
-                original=str(data.url),
-                shortened=short_link,
-                expire_at=expire_date
-            )   
-            db.add(item)            
-            await db.commit()
-            await db.refresh(item)
+        await db.refresh(new_link)
+
+        if expire_date:
             scheduler.add_job(
                 task_expire, 
                 trigger='date',
-                run_date=item.expire_at,
-                args=[item.id]
+                run_date=expire_date,
+                args=[new_link.id]
             )
-            return {
-                'original': data.url,
-                'shortened': short_link,
-                'time': expire_date,
-            }              
-        except IntegrityError:
-            await db.rollback()
-            raise HTTPException(
-                status_code=409,
-                detail=f"The short link '{data.text}' is already taken. Please choose another one"
-            )
-        except Exception as e:
-            await db.rollback()
-            print(f"Server error: {e}")
-            raise HTTPException(status_code=500, detail="Internal server error")
+
+        return new_link
+
+    except Exception as e:
+        await db.rollback()
+        print(f"Server error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create link") 
 
     
-@router_link.post(
+@router_link.delete(
     '/delete/{id}',
     tags=['Links'],
     summary="Delete link"

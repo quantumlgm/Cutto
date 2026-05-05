@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from scalar_fastapi import get_scalar_api_reference
 from contextlib import asynccontextmanager
 
-from .routers.links import router_link 
+from .routers.links import router_link
+from .routers.registr import router_auth
 from .routers.qr import router_qr
 from .config import settings
 from .functions import scheduler, link_cleaner
@@ -32,6 +33,7 @@ async def scalar_html():
 
 app.include_router(router_link)
 app.include_router(router_qr)
+app.include_router(router_auth)
 
 app.add_middleware(
     CORSMiddleware,

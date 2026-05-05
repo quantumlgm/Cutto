@@ -2,8 +2,9 @@ from sqlalchemy import select, delete, create_engine
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from datetime import datetime
+from passlib.context import CryptContext
 
-from .database import async_session, engine
+from .database import async_session
 from .models import Links
 from .config import settings
 

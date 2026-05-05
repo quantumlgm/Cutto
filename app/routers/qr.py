@@ -22,7 +22,10 @@ from ..models import Links
 
 router_qr = APIRouter()
 
-@router_qr.post('/qr/create')
+@router_qr.post(
+    '/qr/create',
+    tags=['Create']
+)
 async def qreate_qr(
     data: CreateQr,
     db: AsyncSession = Depends(get_db)
