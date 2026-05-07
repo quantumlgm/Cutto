@@ -1,0 +1,9 @@
+[tool.ruff]
+exclude = [
+    ".venv",
+    ".vscode",
+    "migrations",
+]
+
+[tool.ruff.format]
+quote-style = "double"

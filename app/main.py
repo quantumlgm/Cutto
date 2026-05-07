@@ -9,20 +9,23 @@ from .routers.qr import router_qr
 from .config import settings
 from .functions import scheduler, link_cleaner
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     scheduler.start()
     scheduler.add_job(
         link_cleaner,
-        trigger='interval',
+        trigger="interval",
         minutes=5,
-        id='link_cleaner_task',
-        replace_existing=True
+        id="link_cleaner_task",
+        replace_existing=True,
     )
     yield
     scheduler.shutdown()
 
+
 app = FastAPI(lifespan=lifespan)
+
 
 @app.get("/", include_in_schema=False)
 async def scalar_html():
@@ -30,6 +33,7 @@ async def scalar_html():
         openapi_url=app.openapi_url,
         scalar_proxy_url="https://proxy.scalar.com",
     )
+
 
 app.include_router(router_link)
 app.include_router(router_qr)
@@ -39,7 +43,6 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOW_ORIGINS,
     allow_credentials=True,
-    allow_methods=['*'],
-    allow_headers=['*']
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
-
