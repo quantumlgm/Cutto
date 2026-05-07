@@ -9,6 +9,7 @@ class Users(Base):
     __tablename__ = 'users'
     login: Mapped[str] = mapped_column(nullable=False, unique=True)
     password: Mapped[str] = mapped_column(nullable=False)
+    is_admin: Mapped[bool] = mapped_column(default=False, nullable=False)
     
     links: Mapped[list['Links']] = relationship(back_populates='owner')
 

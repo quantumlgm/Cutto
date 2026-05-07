@@ -7,6 +7,7 @@ from passlib.context import CryptContext
 from ..schemas import CheckAuth
 from ..database import get_db
 from ..models import Users
+from ..functions import create_token
 
 router_auth = APIRouter()
 pwd_context = CryptContext(schemes='bcrypt', deprecated='auto')
@@ -48,7 +49,11 @@ async def login(
             raise HTTPException(status_code=404, detail='No such user exists. Please register')    
         if not pwd_context.verify(data.password, result.password):
             raise HTTPException(status_code=401, detail="Invalid password")
-        return {"message": "Login successful", "user_id": result.id}
+        access_token = create_token(data={"sub": str(result.id)})
+        return {
+            "access_token": access_token, 
+            "token_type": "bearer"
+        }
     except Exception as e:
         await db.rollback()
         print(f"Registration error: {e}")

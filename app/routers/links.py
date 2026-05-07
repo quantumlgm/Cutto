@@ -1,16 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy import select, func
+from sqlalchemy import select
 from datetime import datetime, timedelta
-
 import secrets
 
-from ..schemas import CheckUrl, CheckCreate, Update, CheckTemporary, CheckAll
+from ..schemas import Update, CheckAll
 from ..database import get_db
-from ..models import Links
-from ..functions import scheduler, task_expire
+from ..models import Links, Users
+from ..functions import scheduler, task_expire, get_token, get_admin
 
 router_link = APIRouter()
     
@@ -20,6 +18,7 @@ router_link = APIRouter()
     summary='Get all links',
 )
 async def all(
+    admin: Users = Depends(get_admin),
     db: AsyncSession = Depends(get_db)
 ):
     try:
@@ -35,12 +34,36 @@ async def all(
         raise HTTPException(status_code=500, detail="Internal server error")
     
 @router_link.get(
+    '/get/my',
+    tags=['Statistics'],
+    summary='Get user links',
+)
+async def my(
+    user_id: int = Depends(get_token),
+    db: AsyncSession = Depends(get_db)
+):
+    if not user_id:
+        raise HTTPException(status_code=401, detail='Log in to see your links')
+    try:
+        query = await db.execute(select(Links).where(Links.owner_id == user_id))
+        item = query.scalars().all()        
+        if not item:
+            raise HTTPException(status_code=404, detail='No links found')        
+        return item
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f'Server error: {e}')
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+@router_link.get(
     '/get/{id}',
     tags=['Statistics'],
     summary='Get links for a specific user',
 )
 async def get_by_user(
     id: int,
+    admin: Users = Depends(get_admin),
     db: AsyncSession = Depends(get_db)
 ):
     try:
@@ -61,7 +84,8 @@ async def get_by_user(
     summary='Get most popular links'
 )
 async def leaderboard(
-    db: AsyncSession = Depends(get_db)
+    admin: Users = Depends(get_admin),
+    db: AsyncSession = Depends(get_db),
 ):
     try:
         query = await db.execute(
@@ -103,12 +127,13 @@ async def get_link(
         raise HTTPException(status_code=500, detail="Internal server error")
     
 @router_link.post(
-    '/shorten',
+    '/create',
     tags=['Create'],
     summary="Universal short link creator"
 )
-async def add_link(
+async def create(
     data: CheckAll,
+    user_id: int = Depends(get_token),
     db: AsyncSession = Depends(get_db)
 ):
     final_short_link = None
@@ -134,7 +159,8 @@ async def add_link(
         new_link = Links(
             original=str(data.url),
             shortened=final_short_link,
-            expire_at=expire_date,        
+            expire_at=expire_date,   
+            owner_id=user_id     
         )
         db.add(new_link)
         await db.commit()
@@ -162,7 +188,8 @@ async def add_link(
     summary="Delete link"
 )
 async def delete(
-    id: int,
+    id: int,   
+    user_id: int = Depends(get_token), 
     db: AsyncSession = Depends(get_db)
 ):   
     query = await db.execute(select(Links).where(Links.id == id))
@@ -172,17 +199,23 @@ async def delete(
             status_code=404,
             detail=f"The link with id:{id} was not found"
         )
-    try:
-        await db.delete(item)
-        await db.commit()
-        return {
-            'status': 200,
-            'result': item,
-            'message': 'Successfuly deleted'
-        }
-    except Exception:
-        await db.rollback()
-        raise HTTPException(status_code=500, detail="Failed to delete from the database")
+    if user_id == item.owner_id:
+        try:
+            await db.delete(item)
+            await db.commit()
+            return {
+                'status': 200,
+                'result': item,
+                'message': 'Successfuly deleted'
+            }            
+        except Exception:
+            await db.rollback()
+            raise HTTPException(status_code=500, detail="Failed to delete from the database")
+    elif user_id == None or user_id != item.owner_id:
+        raise HTTPException(
+            status_code=403, 
+            detail="You don't have permission to delete this link"
+        )
     
 @router_link.patch(
     '/update',
@@ -191,6 +224,7 @@ async def delete(
 )
 async def update(
     data: Update,
+    user_id: int = Depends(get_token), 
     db: AsyncSession = Depends(get_db)
 ):   
     query = await db.execute(select(Links).where(Links.id == data.id))
@@ -200,19 +234,24 @@ async def update(
             status_code=404,
             detail=f"Link with id:{data.id} not found"
         )
-    try:
-        item.original = str(data.url)
-        await db.commit()
-        await db.refresh(item)
-        return {
-            'status': 200,
-            'result': item,
-            'message': 'Succesfuly updated'
-        }
-    except Exception:
-        await db.rollback()
-        raise HTTPException(status_code=500, detail="Error while updating from the database")
-
+    if user_id == item.owner_id:
+        try:
+            item.original = str(data.url)
+            await db.commit()
+            await db.refresh(item)
+            return {
+                'status': 200,
+                'result': item,
+                'message': 'Succesfuly updated'
+            }
+        except Exception:
+            await db.rollback()
+            raise HTTPException(status_code=500, detail="Error while updating from the database")
+    elif user_id == None or user_id != item.owner_id:
+        raise HTTPException(
+            status_code=403, 
+            detail="You don't have permission to delete this link"
+        )
 
     
 

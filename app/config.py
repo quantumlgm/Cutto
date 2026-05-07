@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     DB_PASS: str
     DB_NAME: str
     ALLOW_ORIGINS: list[str]
+    SECRET_KEY: str
+    ALGORITM: str
+    TOKEN_EXPERATION: int
     
     @property
     def DB_URL_asyncpg(self) -> str:
