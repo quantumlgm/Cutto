@@ -16,7 +16,6 @@ from qrcode.image.styles.moduledrawers import (
     GappedSquareModuleDrawer,
     SquareModuleDrawer,
 )
-from qrcode.image.styles.colormasks import SolidFillColorMask
 from PIL import ImageColor
 
 from ..database import get_db
@@ -66,8 +65,8 @@ async def qreate_qr(data: CreateQr, db: AsyncSession = Depends(get_db)):
 
         raw_grad_color = data.gradient_color if data.gradient_color else "#000000"
         gradient_color = ImageColor.getcolor(raw_grad_color, "RGB")
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail='Incorrect color format')
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Incorrect color format")
 
     match getattr(data, "gradient_type", None):
         case "radial":

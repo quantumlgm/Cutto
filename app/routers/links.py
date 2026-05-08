@@ -21,15 +21,12 @@ router_link = APIRouter()
 async def all(
     limit: int = 10,
     offset: int = 0,
-    admin: Users = Depends(get_admin), 
+    admin: Users = Depends(get_admin),
     db: AsyncSession = Depends(get_db),
 ):
     try:
         query = await db.execute(
-            select(Links)
-            .limit(limit)
-            .offset(offset)
-            .order_by(Links.created_at.desc())
+            select(Links).limit(limit).offset(offset).order_by(Links.created_at.desc())
         )
         item = query.scalars().all()
         if not item:
@@ -50,8 +47,8 @@ async def all(
 async def my(
     limit: int = 10,
     offset: int = 0,
-    user_id: int = Depends(get_token), 
-    db: AsyncSession = Depends(get_db)
+    user_id: int = Depends(get_token),
+    db: AsyncSession = Depends(get_db),
 ):
     if not user_id:
         raise HTTPException(status_code=401, detail="Log in to see your links")
@@ -65,10 +62,7 @@ async def my(
         )
         item = query.scalars().all()
         if not item:
-            return {
-                "links": [],
-                'detail': 'You dont have links. Please create it'
-            }
+            return {"links": [], "detail": "You dont have links. Please create it"}
         return {"links": item}
     except HTTPException:
         raise
@@ -100,7 +94,8 @@ async def get_by_user(
 
 @router_link.get("/leaderboard", tags=["Statistics"], summary="Get most popular links")
 async def leaderboard(
-    admin: Users = Depends(get_admin), db: AsyncSession = Depends(get_db),
+    admin: Users = Depends(get_admin),
+    db: AsyncSession = Depends(get_db),
 ):
     try:
         query = await db.execute(select(Links).order_by(Links.clicks.desc()))
@@ -127,7 +122,7 @@ async def get_link(link: str, db: AsyncSession = Depends(get_db)):
         clicks_key = f"clicks:{link}"
         original_url = await redis.get(cache_key)
 
-        if not original_url:        
+        if not original_url:
             query = await db.execute(select(Links).where(Links.shortened == link))
             item = query.scalar_one_or_none()
             if not item:
@@ -140,11 +135,10 @@ async def get_link(link: str, db: AsyncSession = Depends(get_db)):
                 res = await pipe.execute()
         else:
             await redis.incr(clicks_key)
-        return RedirectResponse(url=original_url)        
+        return RedirectResponse(url=original_url)
     except Exception as e:
         print(f"Server error: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
-   
 
 
 @router_link.post("/create", tags=["Links"], summary="Universal short link creator")
@@ -181,7 +175,7 @@ async def create(
             expire_at=expire_date,
             owner_id=user_id,
         )
-        cache_key = f"link:{final_short_link}"    
+        cache_key = f"link:{final_short_link}"
         clicks_key = f"clicks:{final_short_link}"
         await redis.set(cache_key, data.url, ex=3600)
         await redis.setnx(clicks_key, 0)
@@ -204,9 +198,7 @@ async def create(
 
 @router_link.delete("/delete/{id}", tags=["Links"], summary="Delete link")
 async def delete(
-    id: int, 
-    user_id: int = Depends(get_token),
-    db: AsyncSession = Depends(get_db)
+    id: int, user_id: int = Depends(get_token), db: AsyncSession = Depends(get_db)
 ):
     query = await db.execute(select(Links).where(Links.id == id))
     item = query.scalar_one_or_none()
@@ -233,10 +225,8 @@ async def delete(
 
 @router_link.patch("/update", tags=["Links"], summary="Update link")
 async def update(
-    data: Update,
-    user_id: int = Depends(get_token), 
-    db: AsyncSession = Depends(get_db)
-):    
+    data: Update, user_id: int = Depends(get_token), db: AsyncSession = Depends(get_db)
+):
     query = await db.execute(select(Links).where(Links.id == data.id))
     item = query.scalar_one_or_none()
     if not item:
@@ -245,7 +235,7 @@ async def update(
         try:
             item.original = str(data.url)
             await db.commit()
-            await db.refresh(item)                    
+            await db.refresh(item)
             await redis.delete(f"link:{item.shortened}", f"clicks:{item.shortened}")
             return {"status": 200, "result": item, "message": "Succesfuly updated"}
         except Exception:

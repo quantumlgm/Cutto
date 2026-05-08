@@ -12,16 +12,14 @@ async_session = sessionmaker(
     expire_on_commit=False,
 )
 
+
 async def get_db():
     async with async_session() as session:
         yield session
 
 
-redis = Redis(
-    host=settings.REDIS_HOST,
-    port=settings.REDIS_PORT,
-    decode_responses=True
-)        
+redis = Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, decode_responses=True)
+
 
 async def get_redis():
     yield redis

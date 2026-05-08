@@ -1,5 +1,4 @@
 from pydantic import HttpUrl, BaseModel, Field
-from typing import Optional
 
 
 class CheckUrl(BaseModel):
