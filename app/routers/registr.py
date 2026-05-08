@@ -13,7 +13,7 @@ router_auth = APIRouter()
 pwd_context = CryptContext(schemes="bcrypt", deprecated="auto")
 
 
-@router_auth.post("/registration")
+@router_auth.post("/registration", tags=["Authorisation"], summary="Create new account")
 async def registration(data: CheckAuth, db: AsyncSession = Depends(get_db)):
     hash_password = pwd_context.hash(data.password)
     try:
@@ -32,7 +32,7 @@ async def registration(data: CheckAuth, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router_auth.post("/login")
+@router_auth.post("/login", tags=["Authorisation"], summary="Log in your account")
 async def login(data: CheckAuth, db: AsyncSession = Depends(get_db)):
     try:
         query = await db.execute(select(Users).where(Users.login == data.login))

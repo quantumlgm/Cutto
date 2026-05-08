@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import secrets
 
 from ..schemas import Update, CheckAll
-from ..database import get_db
+from ..database import get_db, redis
 from ..models import Links, Users
 from ..functions import scheduler, task_expire, get_token, get_admin
 
@@ -123,21 +123,31 @@ async def leaderboard(
 )
 async def get_link(link: str, db: AsyncSession = Depends(get_db)):
     try:
-        query = await db.execute(select(Links).where(Links.shortened == link))
-        item = query.scalar_one_or_none()
-        if not item:
-            raise HTTPException(status_code=404, detail="No links found")
-        item.clicks += 1
-        await db.commit()
-        return RedirectResponse(url=item.original)
-    except HTTPException:
-        raise
+        cache_key = f"link:{link}"
+        clicks_key = f"clicks:{link}"
+        original_url = await redis.get(cache_key)
+
+        if not original_url:        
+            query = await db.execute(select(Links).where(Links.shortened == link))
+            item = query.scalar_one_or_none()
+            if not item:
+                raise HTTPException(status_code=404, detail="No links found")
+            original_url = item.original
+            async with redis.pipeline(transaction=True) as pipe:
+                pipe.set(cache_key, original_url, ex=3600)
+                pipe.setnx(clicks_key, item.clicks)
+                pipe.incr(clicks_key)
+                res = await pipe.execute()
+        else:
+            await redis.incr(clicks_key)
+        return RedirectResponse(url=original_url)        
     except Exception as e:
         print(f"Server error: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+   
 
 
-@router_link.post("/create", tags=["Create"], summary="Universal short link creator")
+@router_link.post("/create", tags=["Links"], summary="Universal short link creator")
 async def create(
     data: CheckAll,
     user_id: int = Depends(get_token),
@@ -171,6 +181,10 @@ async def create(
             expire_at=expire_date,
             owner_id=user_id,
         )
+        cache_key = f"link:{final_short_link}"    
+        clicks_key = f"clicks:{final_short_link}"
+        await redis.set(cache_key, data.url, ex=3600)
+        await redis.setnx(clicks_key, 0)
         db.add(new_link)
         await db.commit()
         await db.refresh(new_link)
@@ -204,6 +218,7 @@ async def delete(
         try:
             await db.delete(item)
             await db.commit()
+            await redis.delete(f"link:{item.shortened}", f"clicks:{item.shortened}")
             return {"status": 200, "result": item, "message": "Successfuly deleted"}
         except Exception:
             await db.rollback()
@@ -221,7 +236,7 @@ async def update(
     data: Update,
     user_id: int = Depends(get_token), 
     db: AsyncSession = Depends(get_db)
-):
+):    
     query = await db.execute(select(Links).where(Links.id == data.id))
     item = query.scalar_one_or_none()
     if not item:
@@ -230,7 +245,8 @@ async def update(
         try:
             item.original = str(data.url)
             await db.commit()
-            await db.refresh(item)
+            await db.refresh(item)                    
+            await redis.delete(f"link:{item.shortened}", f"clicks:{item.shortened}")
             return {"status": 200, "result": item, "message": "Succesfuly updated"}
         except Exception:
             await db.rollback()
