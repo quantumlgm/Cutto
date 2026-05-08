@@ -20,7 +20,7 @@ async def registration(data: CheckAuth, db: AsyncSession = Depends(get_db)):
         new_user = Users(login=data.login, password=hash_password)
         db.add(new_user)
         await db.commit()
-        return {"login": data.login, "password": "password"}
+        return {"login": data.login}
     except IntegrityError:
         await db.rollback()
         raise HTTPException(
@@ -36,14 +36,14 @@ async def registration(data: CheckAuth, db: AsyncSession = Depends(get_db)):
 async def login(data: CheckAuth, db: AsyncSession = Depends(get_db)):
     try:
         query = await db.execute(select(Users).where(Users.login == data.login))
-        result = query.scalar_one_or_none()
-        if not result:
+        item = query.scalar_one_or_none()
+        if not item:
             raise HTTPException(
                 status_code=404, detail="No such user exists. Please register"
             )
-        if not pwd_context.verify(data.password, result.password):
+        if not pwd_context.verify(data.password, item.password):
             raise HTTPException(status_code=401, detail="Invalid password")
-        access_token = create_token(data={"sub": str(result.id)})
+        access_token = await create_token(data={"sub": str(item.id)})
         return {"access_token": access_token, "token_type": "bearer"}
     except Exception as e:
         await db.rollback()

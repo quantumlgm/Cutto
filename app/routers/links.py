@@ -18,9 +18,19 @@ router_link = APIRouter()
     tags=["Statistics"],
     summary="Get all links",
 )
-async def all(admin: Users = Depends(get_admin), db: AsyncSession = Depends(get_db)):
+async def all(
+    limit: int = 10,
+    offset: int = 0,
+    admin: Users = Depends(get_admin), 
+    db: AsyncSession = Depends(get_db),
+):
     try:
-        query = await db.execute(select(Links))
+        query = await db.execute(
+            select(Links)
+            .limit(limit)
+            .offset(offset)
+            .order_by(Links.created_at.desc())
+        )
         item = query.scalars().all()
         if not item:
             raise HTTPException(status_code=404, detail="No links found")
@@ -37,15 +47,29 @@ async def all(admin: Users = Depends(get_admin), db: AsyncSession = Depends(get_
     tags=["Statistics"],
     summary="Get user links",
 )
-async def my(user_id: int = Depends(get_token), db: AsyncSession = Depends(get_db)):
+async def my(
+    limit: int = 10,
+    offset: int = 0,
+    user_id: int = Depends(get_token), 
+    db: AsyncSession = Depends(get_db)
+):
     if not user_id:
         raise HTTPException(status_code=401, detail="Log in to see your links")
     try:
-        query = await db.execute(select(Links).where(Links.owner_id == user_id))
+        query = await db.execute(
+            select(Links)
+            .limit(limit)
+            .offset(offset)
+            .where(Links.owner_id == user_id)
+            .order_by(Links.created_at.desc())
+        )
         item = query.scalars().all()
         if not item:
-            raise HTTPException(status_code=404, detail="No links found")
-        return item
+            return {
+                "links": [],
+                'detail': 'You dont have links. Please create it'
+            }
+        return {"links": item}
     except HTTPException:
         raise
     except Exception as e:
@@ -76,8 +100,7 @@ async def get_by_user(
 
 @router_link.get("/leaderboard", tags=["Statistics"], summary="Get most popular links")
 async def leaderboard(
-    admin: Users = Depends(get_admin),
-    db: AsyncSession = Depends(get_db),
+    admin: Users = Depends(get_admin), db: AsyncSession = Depends(get_db),
 ):
     try:
         query = await db.execute(select(Links).order_by(Links.clicks.desc()))
@@ -167,7 +190,9 @@ async def create(
 
 @router_link.delete("/delete/{id}", tags=["Links"], summary="Delete link")
 async def delete(
-    id: int, user_id: int = Depends(get_token), db: AsyncSession = Depends(get_db)
+    id: int, 
+    user_id: int = Depends(get_token),
+    db: AsyncSession = Depends(get_db)
 ):
     query = await db.execute(select(Links).where(Links.id == id))
     item = query.scalar_one_or_none()
@@ -193,7 +218,9 @@ async def delete(
 
 @router_link.patch("/update", tags=["Links"], summary="Update link")
 async def update(
-    data: Update, user_id: int = Depends(get_token), db: AsyncSession = Depends(get_db)
+    data: Update,
+    user_id: int = Depends(get_token), 
+    db: AsyncSession = Depends(get_db)
 ):
     query = await db.execute(select(Links).where(Links.id == data.id))
     item = query.scalar_one_or_none()

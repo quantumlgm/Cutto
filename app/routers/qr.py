@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -60,11 +60,14 @@ async def qreate_qr(data: CreateQr, db: AsyncSession = Depends(get_db)):
         case _:
             selected_eye_drawer = SquareModuleDrawer()
 
-    rgb_fill = ImageColor.getcolor(data.fill_color, "RGB")
-    rgb_back = ImageColor.getcolor(data.back_color, "RGB")
+    try:
+        rgb_fill = ImageColor.getcolor(data.fill_color, "RGB")
+        rgb_back = ImageColor.getcolor(data.back_color, "RGB")
 
-    raw_grad_color = data.gradient_color if data.gradient_color else "#000000"
-    gradient_color = ImageColor.getcolor(raw_grad_color, "RGB")
+        raw_grad_color = data.gradient_color if data.gradient_color else "#000000"
+        gradient_color = ImageColor.getcolor(raw_grad_color, "RGB")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail='Incorrect color format')
 
     match getattr(data, "gradient_type", None):
         case "radial":

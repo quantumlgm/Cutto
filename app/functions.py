@@ -57,8 +57,8 @@ async def get_token(
     if not token:
         return None
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITM])
-        user_id: str = payload("sub")
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        user_id: str = payload.get("sub")
         if user_id is None:
             return None
         return int(user_id)
@@ -69,7 +69,7 @@ async def get_token(
 
 
 async def get_admin(
-    user_id: int = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)
+    user_id: int = Depends(get_token), db: AsyncSession = Depends(get_db)
 ):
     if user_id is None:
         raise HTTPException(status_code=401, detail="Authentication required")
