@@ -7,7 +7,6 @@ asyncpg==0.31.0
 bcrypt==4.0.1
 black==26.3.1
 click==8.3.3
-colorama==0.4.6
 dotenv==0.9.9
 fastapi==0.136.1
 greenlet==3.5.0
@@ -30,6 +29,7 @@ PyJWT==2.12.1
 python-dotenv==1.2.2
 python-multipart==0.0.27
 pytokens==0.4.1
+PyYAML==6.0.3
 qrcode==8.2
 redis==7.4.0
 ruff==0.15.12

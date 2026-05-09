@@ -12,8 +12,8 @@ from .routers.qr import router_qr
 from .config import settings
 from .functions import scheduler, link_cleaner
 
-
-logging_path = Path("app/logging_config.yml")
+BASE_DIR = Path(__file__).resolve().parent
+logging_path = BASE_DIR / "app/logging_config.yml"
 with open(logging_path, "r") as f:
     config = yaml.safe_load(f)
     logging.config.dictConfig(config)
