@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select
 from passlib.context import CryptContext
+from fastapi.security import OAuth2PasswordRequestForm 
 
 from ..schemas import CheckAuth
 from ..database import get_db
@@ -33,9 +34,9 @@ async def registration(data: CheckAuth, db: AsyncSession = Depends(get_db)):
 
 
 @router_auth.post("/login", tags=["Authorisation"], summary="Log in your account")
-async def login(data: CheckAuth, db: AsyncSession = Depends(get_db)):
+async def login(data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
     try:
-        query = await db.execute(select(Users).where(Users.login == data.login))
+        query = await db.execute(select(Users).where(Users.login == data.username))
         item = query.scalar_one_or_none()
         if not item:
             raise HTTPException(

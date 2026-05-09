@@ -76,12 +76,12 @@ async def my(
     tags=["Statistics"],
     summary="Get links for a specific user",
 )
-async def get_by_user(
+async def get_one_link(
     id: int, admin: Users = Depends(get_admin), db: AsyncSession = Depends(get_db)
 ):
     try:
-        query = await db.execute(select(Links).where(Links.owner_id == id))
-        item = query.scalars().all()
+        query = await db.execute(select(Links).where(Links.id == id))
+        item = query.scalar_one_or_none()
         if not item:
             raise HTTPException(status_code=404, detail="No links found")
         return item
