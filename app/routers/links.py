@@ -200,7 +200,7 @@ async def create(
         )
         cache_key = f"link:{final_short_link}"
         clicks_key = f"clicks:{final_short_link}"
-        await redis.set(cache_key, data.url, ex=3600)
+        await redis.set(cache_key, str(data.url), ex=3600)
         await redis.setnx(clicks_key, 0)
         db.add(new_link)
         await db.commit()

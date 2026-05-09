@@ -28,6 +28,9 @@ services:
       - "8000:8000"
     env_file:
       - .env
+    volumes:
+      - ./app:/Cutto/app           
+      - ./logs:/Cutto/app/logs
     depends_on:
       - db
       - redis
