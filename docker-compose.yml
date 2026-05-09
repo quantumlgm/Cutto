@@ -30,7 +30,7 @@ services:
       - .env
     volumes:
       - ./app:/Cutto/app           
-      - ./logs:/Cutto/app/logs
+      - ./logs:/Cutto/logs
     depends_on:
       - db
       - redis
