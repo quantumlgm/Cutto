@@ -4,6 +4,7 @@ from redis.asyncio import Redis
 
 from .config import settings
 
+
 engine = create_async_engine(url=settings.DB_URL_asyncpg)
 
 async_session = sessionmaker(

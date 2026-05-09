@@ -2,12 +2,21 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from scalar_fastapi import get_scalar_api_reference
 from contextlib import asynccontextmanager
+from pathlib import Path
+import yaml
+import logging.config
 
 from .routers.links import router_link
 from .routers.registr import router_auth
 from .routers.qr import router_qr
 from .config import settings
 from .functions import scheduler, link_cleaner
+
+
+logging_path = Path("app/logging_config.yml")
+with open(logging_path, "r") as f:
+    config = yaml.safe_load(f)
+    logging.config.dictConfig(config)
 
 
 @asynccontextmanager
