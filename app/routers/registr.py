@@ -5,9 +5,10 @@ from sqlalchemy import select
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordRequestForm
 import logging
+import json
 
 from ..schemas import CheckAuth
-from ..database import get_db
+from ..database import get_db, redis, get_token
 from ..models import Users
 from ..functions import create_token
 
@@ -73,3 +74,30 @@ async def login(
             f"Unexpected login error for user '{data.username}': {e}", exc_info=True
         )
         raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router_auth.get("/user")
+async def get_user(
+    user_id: int = Depends(get_token), db: AsyncSession = Depends(get_db)
+):
+
+    cache_key = f"id:{user_id}"
+    cache_user = await redis.get(cache_key)
+    if cache_user:
+        return json.loads(cache_user)
+    try:
+        query = await db.execute(select(Users).where(Users.id == user_id))
+        item = query.scalar_one_or_none()
+        if not item:
+            logger.warning("Error retrieving the token. Please log in again")
+        user_data = {"id": item.id, "login": item.login, "is_admin": item.is_admin}
+        await redis.set(cache_key, json.dumps(user_data), ex=1800)
+    except HTTPException:
+        raise
+    except Exception as e:
+        await db.rollback()
+        logger.error(
+            f"Unexpected login error for user user_id:'{user_id}': {e}", exc_info=True
+        )
+        raise HTTPException(status_code=500, detail="Internal server error")
+    return item

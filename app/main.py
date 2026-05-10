@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from scalar_fastapi import get_scalar_api_reference
 from contextlib import asynccontextmanager
-from pathlib import Path
 import yaml
 import logging.config
 
