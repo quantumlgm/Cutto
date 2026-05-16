@@ -163,7 +163,7 @@ async def get_link(link: str, db: AsyncSession = Depends(get_db)):
 @router_link.post("/create", tags=["Links"], summary="Universal short link creator")
 async def create(
     data: CheckAll,
-    user_id: int = Depends(get_token),
+    user_id: int | None = Depends(get_token),
     db: AsyncSession = Depends(get_db),
 ):
     logger.debug(f"User {user_id} is creating a new link for URL: {data.url}")
