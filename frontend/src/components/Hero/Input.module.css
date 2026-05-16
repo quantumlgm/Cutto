@@ -1,0 +1,36 @@
+.wrapper {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: var(--radius-l);
+    padding: 8px 8px 8px 24px;
+    width: 100%;
+    max-width: 720px;
+    box-shadow: var(--shadow-soft);
+    margin-top: 32px;
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 14px 16px;
+    font-size: 16px;
+    font-family: var(--font-global);
+    background: transparent;
+    color: var(--color-text-main);
+    min-width: 0;
+}
+
+.input::placeholder {
+    color: #94A3B8;
+}
+
+

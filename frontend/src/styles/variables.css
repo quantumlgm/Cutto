@@ -1,0 +1,16 @@
+:root {
+  --color-brand: #D16B4B;
+  --color-brand-hover: #b85a44;
+  --color-brand-soft: #F5E6E0;
+  --color-bg: #FDFBF9;
+  --color-text-main: #1A1A1A;
+  --color-text-muted: #6B6B6B;
+  --font-main-jakarta: 'Plus Jakarta Sans', sans-serif;
+  --font-main-satoshi: 'Satoshi', sans-serif;
+  --font-global: var(--font-main-jakarta);
+  --radius-m: 12px;
+  --radius-l: 24px;  
+  --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --max-width: 1200px;
+}

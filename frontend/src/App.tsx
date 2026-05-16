@@ -1,13 +1,17 @@
-import IconImage from "./Icon"
-import Title from "./Titile"
+import Header from './components/Header/Header'
+import Hero from './components/Hero/Hero'
+import Features from './components/Features/Features'
 
-const App = () => { 
+function App() {
   return (
     <>
-      <Title text='Cutto - сокращатель ссылок' color="red"/>
-      <IconImage height={210} width={210}/>
+      <Header />
+      <main>
+        <Hero />
+        <Features />
+      </main>
     </>
   )
 }
 
-export default App 
+export default App

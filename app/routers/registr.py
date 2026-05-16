@@ -8,9 +8,9 @@ import logging
 import json
 
 from ..schemas import CheckAuth
-from ..database import get_db, redis, get_token
+from ..database import get_db, redis
 from ..models import Users
-from ..functions import create_token
+from ..functions import create_token, get_token
 
 router_auth = APIRouter()
 pwd_context = CryptContext(schemes="bcrypt", deprecated="auto")

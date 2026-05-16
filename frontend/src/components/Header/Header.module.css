@@ -1,0 +1,59 @@
+.header {
+    display: flex;
+    justify-content: center;
+    padding: 24px 32px;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: var(--max-width);
+    gap: 32px;
+}
+
+.logo {
+    margin-top: 6px;
+    width: 120px;
+}
+
+.nav {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.navList {
+    list-style: none;
+    display: flex;
+    gap: 36px;
+    margin: 0;
+    padding: 0;
+}
+
+.navLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    color: var(--color-text-main);
+    font-size: 15px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.navLink:hover {
+    color: var(--color-brand);
+}
+
+.chevron {
+    opacity: 0.6;
+}
+
+.authButtons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+}

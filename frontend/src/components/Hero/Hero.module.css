@@ -1,0 +1,67 @@
+.hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 48px 32px 80px;
+    min-height: calc(100vh - 100px);
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 800px;
+    width: 100%;
+}
+
+.badge {
+    color: var(--color-brand);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    margin: 0 0 20px;
+}
+
+.title {
+    font-family: var(--font-main-satoshi);
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0 0 20px;
+    color: var(--color-text-main);
+    letter-spacing: -0.03em;
+}
+
+.description {
+    color: var(--color-text-muted);
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 560px;
+}
+
+.trustList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 24px 32px;
+    list-style: none;
+    margin: 28px 0 0;
+    padding: 0;
+}
+
+.trustItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-main);
+}
+
+.checkIcon {
+    color: var(--color-brand);
+}
+
