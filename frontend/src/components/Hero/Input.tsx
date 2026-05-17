@@ -41,7 +41,7 @@ export default function Input({ placeholder = "Paste your long URL" }: Props) {
 
   const handleShorten = async () => {
     if (!url) {
-      alert("Пожалуйста, введите ссылку!");
+      alert("Please enter a link!");
       return;
     }
 
@@ -65,14 +65,14 @@ export default function Input({ placeholder = "Paste your long URL" }: Props) {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || "Ошибка при сокращении ссылки");
+        throw new Error(errorData.detail || "Error while shortening link");
       }
 
       const data = await response.json();
       setShortenedCode(data.shortened);
       setIsModalOpen(true);
     } catch (err: any) {
-      alert(err.message || "Произошла непредвиденная ошибка");
+      alert(err.message || "An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -100,7 +100,7 @@ export default function Input({ placeholder = "Paste your long URL" }: Props) {
         body: JSON.stringify(qrPayload),
       });
 
-      if (!response.ok) throw new Error("Не удалось сгенерировать QR-код");
+      if (!response.ok) throw new Error("Failed to generate QR code");
 
       const blob = await response.blob();
       if (qrBlobUrl) URL.revokeObjectURL(qrBlobUrl);
@@ -184,8 +184,8 @@ export default function Input({ placeholder = "Paste your long URL" }: Props) {
       {isModalOpen && (
         <div className={s.modalOverlay}>
           <div className={s.modalContentLarge}>
-            <h2>Ссылка успешно создана!</h2>
-            <p className={s.description}>Ваша короткая ссылка:</p>
+            <h2>Link successfully created!</h2>
+            <p className={s.description}>Your short link:</p>
 
             <div className={s.linkBox}>
               <input
@@ -197,11 +197,11 @@ export default function Input({ placeholder = "Paste your long URL" }: Props) {
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(fullShortLink);
-                  alert("Ссылка скопирована в буфер обмена!");
+                  alert("Link copied to clipboard!");
                 }}
                 className={s.copyBtn}
               >
-                Копировать
+                Copy
               </button>
             </div>
 
@@ -209,7 +209,7 @@ export default function Input({ placeholder = "Paste your long URL" }: Props) {
               <div className={s.qrPreviewSection}>
                 <div className={s.qrFrame}>
                   {isQrLoading && (
-                    <div className={s.qrSpinner}>Загрузка...</div>
+                    <div className={s.qrSpinner}>Loading...</div>
                   )}
                   {qrBlobUrl ? (
                     <img
@@ -218,7 +218,7 @@ export default function Input({ placeholder = "Paste your long URL" }: Props) {
                       className={s.qrImage}
                     />
                   ) : (
-                    <div className={s.qrPlaceholder}>Генерация превью...</div>
+                    <div className={s.qrPlaceholder}>Generating preview...</div>
                   )}
                 </div>
                 {qrBlobUrl && (
@@ -227,17 +227,17 @@ export default function Input({ placeholder = "Paste your long URL" }: Props) {
                     download={`qr-${shortenedCode}.png`}
                     className={s.downloadBtn}
                   >
-                    Скачать PNG
+                    Download PNG
                   </a>
                 )}
               </div>
 
               <div className={s.qrControlsSection}>
-                <h3>Настройка дизайна QR</h3>
+                <h3>QR Design Settings</h3>
 
                 <div className={s.controlGroupRow}>
                   <div className={s.controlItem}>
-                    <label>Цвет паттерна</label>
+                    <label>Pattern color</label>
                     <input
                       type="color"
                       value={fillColor}
@@ -245,7 +245,7 @@ export default function Input({ placeholder = "Paste your long URL" }: Props) {
                     />
                   </div>
                   <div className={s.controlItem}>
-                    <label>Цвет фона</label>
+                    <label>Background color</label>
                     <input
                       type="color"
                       value={backColor}
@@ -255,20 +255,20 @@ export default function Input({ placeholder = "Paste your long URL" }: Props) {
                 </div>
 
                 <div className={s.controlItem}>
-                  <label>Тип градиента</label>
+                  <label>Gradient type</label>
                   <select
                     value={gradientType}
                     onChange={(e) => setGradientType(e.target.value)}
                   >
-                    <option value="none">Без градиента (Сплошной)</option>
-                    <option value="horizontal">Горизонтальный</option>
-                    <option value="radial">Радиальный</option>
+                    <option value="none">No gradient (Solid)</option>
+                    <option value="horizontal">Horizontal</option>
+                    <option value="radial">Radial</option>
                   </select>
                 </div>
 
                 {gradientType !== "none" && (
                   <div className={s.controlItem}>
-                    <label>Второй цвет градиента</label>
+                    <label>Second gradient color</label>
                     <input
                       type="color"
                       value={gradientColor}
@@ -278,26 +278,26 @@ export default function Input({ placeholder = "Paste your long URL" }: Props) {
                 )}
 
                 <div className={s.controlItem}>
-                  <label>Форма точек (Паттерн)</label>
+                  <label>Dot style (Pattern)</label>
                   <select
                     value={dotsStyle}
                     onChange={(e) => setDotsStyle(e.target.value)}
                   >
-                    <option value="square">Квадрат (Стандарт)</option>
-                    <option value="rounded">Сглаженный квадрат</option>
-                    <option value="gapped">Раздельные точки</option>
-                    <option value="circle">Круги</option>
+                    <option value="square">Square (Default)</option>
+                    <option value="rounded">Rounded</option>
+                    <option value="gapped">Separated dots</option>
+                    <option value="circle">Circles</option>
                   </select>
                 </div>
 
                 <div className={s.controlItem}>
-                  <label>Стиль угловых маркеров (Eyes)</label>
+                  <label>Eye style</label>
                   <select
                     value={eyeStyle}
                     onChange={(e) => setEyeStyle(e.target.value)}
                   >
-                    <option value="square">Квадратные</option>
-                    <option value="rounded">Округлые</option>
+                    <option value="square">Square</option>
+                    <option value="rounded">Rounded</option>
                   </select>
                 </div>
               </div>
@@ -307,7 +307,7 @@ export default function Input({ placeholder = "Paste your long URL" }: Props) {
               onClick={() => setIsModalOpen(false)}
               className={s.closeBtn}
             >
-              Закрыть редактор
+              Close editor
             </button>
           </div>
         </div>

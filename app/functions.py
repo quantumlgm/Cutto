@@ -49,7 +49,7 @@ async def link_cleaner():
 
 async def create_token(data: dict):
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.TOKEN_EXPERATION)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.TOKEN_EXPIRATION)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(
         to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
