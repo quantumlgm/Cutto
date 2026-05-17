@@ -45,10 +45,6 @@
 *  [pip (requirements.txt)](./requirements.txt)
 *  [npm (package.json)](./frontend/package.json)
 
-## Архитектура и Структура файлов
-[Смотреть (README.structure.md)](./README.structure.md)
-
-
 ## С чего начать
 
 ### 1. Установка
