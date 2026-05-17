@@ -1,53 +1,52 @@
 .features {
-    padding: 0 32px 100px;
-    max-width: var(--max-width);
-    margin: 0 auto;
+  padding: 0 32px 100px;
+  max-width: var(--max-width);
+  margin: 0 auto;
 }
 
 .grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 32px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
 }
 
 .card {
-    text-align: left;
+  text-align: left;
 }
 
 .iconBox {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    background: var(--color-brand-soft);
-    border-radius: var(--radius-m);
-    color: var(--color-brand);
-    margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--color-brand-soft);
+  border-radius: var(--radius-m);
+  color: var(--color-brand);
+  margin-bottom: 16px;
 }
 
 .icon {
-    width: 20px;
+  width: 20px;
 }
 
 .cardTitle {
-    font-family: var(--font-main-satoshi);
-    font-size: 18px;
-    font-weight: 700;
-    margin: 0 0 8px;
-    color: var(--color-text-main);
+  font-family: var(--font-main-satoshi);
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: var(--color-text-main);
 }
 
 .cardDesc {
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--color-text-muted);
-    margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  margin: 0;
 }
 
 @media (max-width: 900px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
-

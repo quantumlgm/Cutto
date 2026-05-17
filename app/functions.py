@@ -63,6 +63,8 @@ async def get_token(
     if not token:
         return None
     try:
+        if token in ["null", "undefined", ""]:
+            return None
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )

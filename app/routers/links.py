@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, update 
 from datetime import datetime, timedelta
 import secrets
 import logging
@@ -122,48 +122,34 @@ async def leaderboard(
     except Exception as e:
         logger.error(f"Error fetching leaderboard: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
+    
 
-
-@router_link.get(
-    "/{link}",
-    tags=["Links"],
-    summary="Redirect from short link",
-    description="Usage: Enter http://your_domain/{short_link} in your browser",
-)
-async def get_link(link: str, db: AsyncSession = Depends(get_db)):
+@router_link.get("/my_top", tags=["Statistics"], summary="Get most popular links")
+async def top(
+    user_id: int = Depends(get_token),
+    db: AsyncSession = Depends(get_db),
+):
     try:
-        logger.debug(f"Attempting redirect for short link: {link}")
-        cache_key = f"link:{link}"
-        clicks_key = f"clicks:{link}"
-        original_url = await redis.get(cache_key)
-
-        if not original_url:
-            logger.info(f"Cache miss for '{link}', searching in database")
-            query = await db.execute(select(Links).where(Links.shortened == link))
-            item = query.scalar_one_or_none()
-            if not item:
-                logger.warning(f"Failed redirect: short link '{link}' does not exist")
-                raise HTTPException(status_code=404, detail="No links found")
-            original_url = item.original
-            async with redis.pipeline(transaction=True) as pipe:
-                pipe.set(cache_key, original_url, ex=3600)
-                pipe.setnx(clicks_key, item.clicks)
-                pipe.incr(clicks_key)
-                await pipe.execute()
-        else:
-            logger.debug(f"Cache hit for '{link}'")
-            await redis.incr(clicks_key)
-        return RedirectResponse(url=original_url)
+        logger.info(f"The user: {user_id} has requested a list of their top links")
+        query = await db.execute(select(Links).where(Links.owner == user_id).order_by(Links.clicks.desc()))
+        item = query.scalars().all()
+        if not item:
+            logger.warning("Top requested but no links exist")
+            raise HTTPException(status_code=404, detail="No links found")
+        return item
+    except HTTPException:
+        raise
     except Exception as e:
-        print(f"Server error: {e}")
-        logger.error(f"Critical error during redirect for '{link}': {e}", exc_info=True)
+        logger.error(f"Error fetching top: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
+
+
 @router_link.post("/create", tags=["Links"], summary="Universal short link creator")
-async def create(
+async def create_link(
     data: CheckAll,
-    user_id: int = Depends(get_token),
+    user_id: int | None = Depends(get_token),
     db: AsyncSession = Depends(get_db),
 ):
     logger.debug(f"User {user_id} is creating a new link for URL: {data.url}")
@@ -223,7 +209,7 @@ async def create(
 
 
 @router_link.delete("/delete/{id}", tags=["Links"], summary="Delete link")
-async def delete(
+async def delete_link(
     id: int, user_id: int = Depends(get_token), db: AsyncSession = Depends(get_db)
 ):
     logger.info(f"User {user_id} attempting to delete link ID {id}")
@@ -254,7 +240,7 @@ async def delete(
 
 
 @router_link.patch("/update", tags=["Links"], summary="Update link")
-async def update(
+async def update_link(
     data: Update, user_id: int = Depends(get_token), db: AsyncSession = Depends(get_db)
 ):
     logger.info(f"User {user_id} attempting to update link ID {data.id}")
@@ -286,3 +272,51 @@ async def update(
         raise HTTPException(
             status_code=403, detail="You don't have permission to update this link"
         )
+    
+@router_link.get(
+    "/{link}",
+    tags=["Links"],
+    summary="Redirect to original URL from short link",
+    description="Usage: Enter http://your_domain/{short_link} in your browser",
+)
+async def get_link(link: str, db: AsyncSession = Depends(get_db)):
+    try:
+        logger.debug(f"Attempting redirect for short link: {link}")
+        cache_key = f"link:{link}"
+        clicks_key = f"clicks:{link}"
+        original_url = await redis.get(cache_key)
+
+        if not original_url:
+            logger.info(f"Cache miss for '{link}', searching in database")
+            query = await db.execute(select(Links).where(Links.shortened == link))
+            item = query.scalar_one_or_none()
+            if not item:
+                logger.warning(f"Failed redirect: short link '{link}' does not exist")
+                raise HTTPException(status_code=404, detail="No links found")
+            
+            original_url = item.original
+                        
+            item.clicks += 1
+            await db.commit()
+
+            async with redis.pipeline(transaction=True) as pipe:
+                pipe.set(cache_key, original_url, ex=3600)
+                pipe.setnx(clicks_key, item.clicks)
+                await pipe.execute()
+        else:
+            logger.debug(f"Cache hit for '{link}'")            
+            new_clicks = await redis.incr(clicks_key)
+                    
+            await db.execute(
+                update(Links)
+                .where(Links.shortened == link)
+                .values(clicks=new_clicks)
+            )
+            await db.commit()
+
+        return RedirectResponse(url=original_url)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Server error during redirect for '{link}': {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error")

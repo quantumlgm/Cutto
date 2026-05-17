@@ -24,6 +24,7 @@ services:
     build: .
     container_name: cutto_app
     restart: always
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     ports:
       - "8000:8000"
     env_file:
@@ -34,6 +35,21 @@ services:
     depends_on:
       - db
       - redis
+
+  frontend:  
+    build: ./frontend 
+    container_name: cutto_frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    volumes:      
+      - ./frontend:/frontend      
+      - /frontend/node_modules
+    depends_on:
+      - app
     
 volumes:
   postgres_data: 
