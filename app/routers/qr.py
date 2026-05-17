@@ -24,18 +24,11 @@ from ..schemas import CreateQr
 from ..models import Links
 
 router_qr = APIRouter()
-
 logger = logging.getLogger(__name__)
-
 
 @router_qr.post("/qr/create", tags=["Create"])
 async def qreate_qr(data: CreateQr, db: AsyncSession = Depends(get_db)):
     url_str = str(data.url)
-
-    logger.debug(
-        f"Starting QR generation for URL: {url_str} with style: {data.eye_style}"
-    )
-
     qr = qrcode.QRCode(
         error_correction=qrcode.constants.ERROR_CORRECT_H, box_size=10, border=4
     )
@@ -50,7 +43,7 @@ async def qreate_qr(data: CreateQr, db: AsyncSession = Depends(get_db)):
 
         qr.add_data(target_url)
 
-        match getattr(data, "eye_style", "square"):
+        match getattr(data, "dots_style", "square"):
             case "rounded":
                 selected_drawer = RoundedModuleDrawer()
             case "circle":
@@ -74,9 +67,6 @@ async def qreate_qr(data: CreateQr, db: AsyncSession = Depends(get_db)):
             raw_grad_color = data.gradient_color if data.gradient_color else "#000000"
             gradient_color = ImageColor.getcolor(raw_grad_color, "RGB")
         except ValueError:
-            logger.warning(
-                f"User provided invalid color format: {data.fill_color} or {data.back_color}"
-            )
             raise HTTPException(status_code=400, detail="Incorrect color format")
 
         match getattr(data, "gradient_type", None):
@@ -105,7 +95,6 @@ async def qreate_qr(data: CreateQr, db: AsyncSession = Depends(get_db)):
         buf = io.BytesIO()
         img.save(buf, format="PNG")
 
-        logger.info(f"QR code successfully generated for {url_str}")
         return Response(content=buf.getvalue(), media_type="image/png")
 
     except HTTPException:

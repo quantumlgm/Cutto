@@ -318,3 +318,93 @@ Traceback (most recent call last):
   File "d:\Projects_VSCode\Python\github-projects\Cutto\.venv\Lib\site-packages\redis\asyncio\connection.py", line 397, in connect_check_health
     raise e
 redis.exceptions.ConnectionError: Error Multiple exceptions: [Errno 10013] Connect call failed ('::1', 6379, 0, 0), [Errno 10061] Connect call failed ('127.0.0.1', 6379) connecting to localhost:6379.
+2026-05-16 21:34:19,685 [ERROR] app.routers.links: Server error during redirect for 'ziut2': 'coroutine' object has no attribute 'where'
+Traceback (most recent call last):
+  File "/Cutto/app/routers/links.py", line 292, in get_link
+    .where(Links.shortened == link)
+     ^^^^^
+AttributeError: 'coroutine' object has no attribute 'where'
+2026-05-16 21:34:28,591 [ERROR] app.routers.links: Server error during redirect for 'ziut2': 'coroutine' object has no attribute 'where'
+Traceback (most recent call last):
+  File "/Cutto/app/routers/links.py", line 292, in get_link
+    .where(Links.shortened == link)
+     ^^^^^
+AttributeError: 'coroutine' object has no attribute 'where'
+2026-05-16 21:35:13,995 [ERROR] app.routers.links: Server error during redirect for 'ziut2': 'coroutine' object has no attribute 'where'
+Traceback (most recent call last):
+  File "/Cutto/app/routers/links.py", line 292, in get_link
+    .where(Links.shortened == link)
+     ^^^^^
+AttributeError: 'coroutine' object has no attribute 'where'
+2026-05-16 21:36:00,509 [ERROR] app.routers.links: Server error during redirect for 'ziut2': 'coroutine' object has no attribute 'where'
+Traceback (most recent call last):
+  File "/Cutto/app/routers/links.py", line 292, in get_link
+    .where(Links.shortened == link)
+     ^^^^^
+AttributeError: 'coroutine' object has no attribute 'where'
+2026-05-16 21:36:29,470 [ERROR] app.routers.links: Server error during redirect for 'ziut2': 'coroutine' object has no attribute 'where'
+Traceback (most recent call last):
+  File "/Cutto/app/routers/links.py", line 292, in get_link
+    .where(Links.shortened == link)
+     ^^^^^
+AttributeError: 'coroutine' object has no attribute 'where'
+2026-05-16 21:36:30,597 [ERROR] app.routers.links: Server error during redirect for 'ziut2': 'coroutine' object has no attribute 'where'
+Traceback (most recent call last):
+  File "/Cutto/app/routers/links.py", line 292, in get_link
+    .where(Links.shortened == link)
+     ^^^^^
+AttributeError: 'coroutine' object has no attribute 'where'
+2026-05-16 21:36:31,248 [ERROR] app.routers.links: Server error during redirect for 'ziut2': 'coroutine' object has no attribute 'where'
+Traceback (most recent call last):
+  File "/Cutto/app/routers/links.py", line 292, in get_link
+    .where(Links.shortened == link)
+     ^^^^^
+AttributeError: 'coroutine' object has no attribute 'where'
+2026-05-16 21:36:34,977 [ERROR] app.routers.links: Server error during redirect for 'gKV6A': 'coroutine' object has no attribute 'where'
+Traceback (most recent call last):
+  File "/Cutto/app/routers/links.py", line 292, in get_link
+    .where(Links.shortened == link)
+     ^^^^^
+AttributeError: 'coroutine' object has no attribute 'where'
+2026-05-16 21:36:44,740 [ERROR] app.routers.links: Server error during redirect for 'gKV6A': 'coroutine' object has no attribute 'where'
+Traceback (most recent call last):
+  File "/Cutto/app/routers/links.py", line 292, in get_link
+    .where(Links.shortened == link)
+     ^^^^^
+AttributeError: 'coroutine' object has no attribute 'where'
+2026-05-16 21:36:45,275 [ERROR] app.routers.links: Server error during redirect for 'gKV6A': 'coroutine' object has no attribute 'where'
+Traceback (most recent call last):
+  File "/Cutto/app/routers/links.py", line 292, in get_link
+    .where(Links.shortened == link)
+     ^^^^^
+AttributeError: 'coroutine' object has no attribute 'where'
+2026-05-16 21:36:45,493 [ERROR] app.routers.links: Server error during redirect for 'gKV6A': 'coroutine' object has no attribute 'where'
+Traceback (most recent call last):
+  File "/Cutto/app/routers/links.py", line 292, in get_link
+    .where(Links.shortened == link)
+     ^^^^^
+AttributeError: 'coroutine' object has no attribute 'where'
+2026-05-16 21:37:16,200 [ERROR] app.routers.links: Server error during redirect for 'gKV6A': 'coroutine' object has no attribute 'where'
+Traceback (most recent call last):
+  File "/Cutto/app/routers/links.py", line 292, in get_link
+    .where(Links.shortened == link)
+     ^^^^^
+AttributeError: 'coroutine' object has no attribute 'where'
+2026-05-16 21:37:28,657 [ERROR] app.routers.links: Server error during redirect for 'WfaN0': 'coroutine' object has no attribute 'where'
+Traceback (most recent call last):
+  File "/Cutto/app/routers/links.py", line 292, in get_link
+    .where(Links.shortened == link)
+     ^^^^^
+AttributeError: 'coroutine' object has no attribute 'where'
+2026-05-16 21:39:55,042 [ERROR] app.routers.links: Server error during redirect for 'gKV6A': 'coroutine' object has no attribute 'where'
+Traceback (most recent call last):
+  File "/Cutto/app/routers/links.py", line 292, in get_link
+    .where(Links.shortened == link)
+     ^^^^^
+AttributeError: 'coroutine' object has no attribute 'where'
+2026-05-16 21:46:31,020 [ERROR] app.routers.links: Server error during redirect for 'vr9Cz': 'coroutine' object has no attribute 'where'
+Traceback (most recent call last):
+  File "/Cutto/app/routers/links.py", line 292, in get_link
+    .where(Links.shortened == link)
+     ^^^^^
+AttributeError: 'coroutine' object has no attribute 'where'
