@@ -55,7 +55,7 @@ DB_NAME=cutto
 ```
 
 ### 3. Подключение к Redis
-```bash
+```env
 REDIS_HOST=redis
 REDIS_PORT=6379
 ```
@@ -73,7 +73,7 @@ TOKEN_EXPERATION=30
 ```
 
 ### 5. Разрешенные адреса CORS
-```bash
+```env
 ALLOW_ORIGINS=["http://localhost:3000", "http://127.0.0.1:5173", "http://localhost:5173"]
 ```
 
@@ -83,7 +83,7 @@ alembic upgrade head
 ```
 или если вы в docker
 ```bash
-docker-compose exec app alembic upgrade head
+docker compose exec app alembic upgrade head
 ```
 
 ### 7. Развертывание
@@ -96,6 +96,5 @@ docker compose up -d --build
 
 ## Контакты
 
-Баг-трекер: GitHub Issues
-
-Телеграм : @quantumlgm
+* **Баг-трекер:** [GitHub Issues](https://github.com/quantumlgm/Cutto/issues)
+* **Телеграм:** [@quantumlgm](https://t.me/quantumlgm)
