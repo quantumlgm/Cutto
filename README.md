@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>✂️ Cutto</h1>
+<img src="./frontend/src/assets/icon-link.svg" alt="Cutto Logo" width="100">
 
 **Self-hosted сервис для сокращения URL-адресов и генерации кастомных QR-кодов**
 
@@ -14,8 +14,6 @@
 </p>
 
 </div>
-
----
 
 ## Особенности
 * Умное сокращение URL: Генерация случайных безопасных слагов (`secrets.token_urlsafe`) или использование кастомных текстовых алиасов для коротких ссылок
