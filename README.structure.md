@@ -1,4 +1,3 @@
-
 ```mermaid
 Cutto/
 ├── app/                          
