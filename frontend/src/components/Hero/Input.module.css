@@ -1,354 +1,356 @@
 .wrapper {
-    display: flex;
-    align-items: center;
-    background: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: var(--radius-l);
-    padding: 8px 8px 8px 24px;
-    width: 100%;
-    max-width: 720px;
-    box-shadow: var(--shadow-soft);
-    margin-top: 32px;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: var(--radius-l);
+  padding: 8px 8px 8px 24px;
+  width: 100%;
+  max-width: 720px;
+  box-shadow: var(--shadow-soft);
+  margin-top: 32px;
 }
 
 .icon {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .input {
-    flex: 1;
-    border: none;
-    outline: none;
-    padding: 14px 16px;
-    font-size: 16px;
-    font-family: var(--font-global);
-    background: transparent;
-    color: var(--color-text-main);
-    min-width: 0;
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 14px 16px;
+  font-size: 16px;
+  font-family: var(--font-global);
+  background: transparent;
+  color: var(--color-text-main);
+  min-width: 0;
 }
 
 .input::placeholder {
-    color: #94A3B8;
+  color: #94a3b8;
 }
 
 .modalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
-    backdrop-filter: blur(4px); 
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  backdrop-filter: blur(4px);
 }
 
 .modalContentLarge {
-    background: #ffffff;
-    padding: 10px 32px 32px;
-    border-radius: var(--radius-l);
-    width: 100%;
-    max-width: 840px;
-    box-shadow: var(--shadow-card);
-    text-align: center;
-    position: relative;
-    max-height: 90vh;
-    overflow-y: auto;
-    animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  background: #ffffff;
+  padding: 10px 32px 32px;
+  border-radius: var(--radius-l);
+  width: 100%;
+  max-width: 840px;
+  box-shadow: var(--shadow-card);
+  text-align: center;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modalContentLarge h2 {
-    font-family: var(--font-main-satoshi);
-    font-size: 24px;
-    margin-bottom: 8px;
-    color: var(--color-text-main);
+  font-family: var(--font-main-satoshi);
+  font-size: 24px;
+  margin-bottom: 8px;
+  color: var(--color-text-main);
 }
 
 .linkBox {
-    display: flex;
-    gap: 8px;
-    margin: 20px 0;
-    background: #F8FAFC;
-    padding: 6px;
-    border-radius: var(--radius-m);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  gap: 8px;
+  margin: 20px 0;
+  background: #f8fafc;
+  padding: 6px;
+  border-radius: var(--radius-m);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .modalInput {
-    flex: 1;
-    border: none;
-    background: transparent;
-    padding: 8px;
-    font-size: 14px;
-    color: var(--color-brand);
-    font-weight: 500;
-    outline: none;
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 8px;
+  font-size: 14px;
+  color: var(--color-brand);
+  font-weight: 500;
+  outline: none;
 }
 
 .copyBtn {
-    background: var(--color-brand);
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    border-radius: var(--radius-m);
-    cursor: pointer;
-    font-weight: 500;
-    font-size: 14px;
-    transition: opacity 0.2s;
+  background: var(--color-brand);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-m);
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: opacity 0.2s;
 }
 
 .copyBtn:hover {
-    opacity: 0.9;
+  opacity: 0.9;
 }
 
 .closeBtn {
-    background: transparent;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    color: var(--color-text-muted);
-    padding: 18px 24px;
-    margin-top: 24px;
-    border-radius: var(--radius-m);
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.2s;
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: var(--color-text-muted);
+  padding: 18px 24px;
+  margin-top: 24px;
+  border-radius: var(--radius-m);
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
 }
 
 .closeBtn:hover {
-    background: #F1F5F9;
-    color: var(--color-text-main);
+  background: #f1f5f9;
+  color: var(--color-text-main);
 }
 
 @keyframes slideDown {
-    from {
-        transform: translateY(-20px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .container {
-    width: 100%;
-    max-width: 720px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .optionsToggle {
-    background: none;
-    border: none;
-    color: var(--color-brand);
-    font-size: 14px;
-    font-weight: 500;
-    margin-top: 16px;
-    cursor: pointer;
-    transition: opacity 0.2s;
+  background: none;
+  border: none;
+  color: var(--color-brand);
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 16px;
+  cursor: pointer;
+  transition: opacity 0.2s;
 }
 
 .optionsToggle:hover {
-    opacity: 0.8;
+  opacity: 0.8;
 }
 
 .optionsPanel {
-    display: flex;
-    gap: 16px;
-    width: 100%;
-    margin-top: 16px;
-    background: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: var(--radius-m);
-    padding: 16px;
-    box-shadow: var(--shadow-soft);
-    animation: slideDown 0.2s ease-out;
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  margin-top: 16px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: var(--radius-m);
+  padding: 16px;
+  box-shadow: var(--shadow-soft);
+  animation: slideDown 0.2s ease-out;
 }
 
 .optionField {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    text-align: left;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
 }
 
 .label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--color-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.subInput, .select {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #E2E8F0;
-    border-radius: var(--radius-s);
-    font-size: 14px;
-    outline: none;
-    background-color: #F8FAFC;
-    color: var(--color-text-main);
-    font-family: var(--font-global);
-    transition: border-color 0.2s;
+.subInput,
+.select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-s);
+  font-size: 14px;
+  outline: none;
+  background-color: #f8fafc;
+  color: var(--color-text-main);
+  font-family: var(--font-global);
+  transition: border-color 0.2s;
 }
 
-.subInput:focus, .select:focus {
-    border-color: var(--color-brand);
+.subInput:focus,
+.select:focus {
+  border-color: var(--color-brand);
 }
 
 @media (max-width: 600px) {
-    .optionsPanel {
-        flex-direction: column;
-        gap: 12px;
-    }
+  .optionsPanel {
+    flex-direction: column;
+    gap: 12px;
+  }
 }
 
 .qrWorkspace {
-    display: flex;
-    gap: 32px;
-    margin-top: 28px;
-    text-align: left;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-    padding-top: 24px;
+  display: flex;
+  gap: 32px;
+  margin-top: 28px;
+  text-align: left;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding-top: 24px;
 }
 
 .qrPreviewSection {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: #F9FAFB;
-    border-radius: var(--radius-m);
-    padding: 20px;
-    border: 1px dashed #E2E8F0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f9fafb;
+  border-radius: var(--radius-m);
+  padding: 20px;
+  border: 1px dashed #e2e8f0;
 }
 
 .qrFrame {
-    width: 220px;
-    height: 220px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
+  width: 220px;
+  height: 220px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
 }
 
 .qrImage {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .qrSpinner {
-    position: absolute;
-    background: rgba(255, 255, 255, 0.8);
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    color: var(--color-brand);
-    font-weight: 500;
+  position: absolute;
+  background: rgba(255, 255, 255, 0.8);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--color-brand);
+  font-weight: 500;
 }
 
 .qrPlaceholder {
-    color: #94A3B8;
-    font-size: 14px;
+  color: #94a3b8;
+  font-size: 14px;
 }
 
 .downloadBtn {
-    margin-top: 16px;
-    background: var(--color-brand-soft);
-    color: var(--color-brand);
-    padding: 10px 20px;
-    border-radius: var(--radius-m);
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: background 0.2s;
-    text-align: center;
-    width: 100%;
-    max-width: 220px;
+  margin-top: 16px;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+  padding: 10px 20px;
+  border-radius: var(--radius-m);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+  text-align: center;
+  width: 100%;
+  max-width: 220px;
 }
 
 .downloadBtn:hover {
-    background: var(--color-brand);
-    color: #fff;
+  background: var(--color-brand);
+  color: #fff;
 }
 
 .qrControlsSection {
-    flex: 1.2;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .qrControlsSection h3 {
-    margin: 0 0 4px 0;
-    font-size: 18px;
-    color: var(--color-text-main);
-    font-weight: 600;
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  color: var(--color-text-main);
+  font-weight: 600;
 }
 
 .controlGroupRow {
-    display: flex;
-    gap: 16px;
+  display: flex;
+  gap: 16px;
 }
 
 .controlItem {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
 }
 
 .controlItem label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
 }
 
-.controlItem input[type="color"] {    
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    width: 100%;
-    height: 40px;
-    border-radius: var(--radius-m);
-    cursor: pointer;
-    background: none;
-    padding: 0;
+.controlItem input[type="color"] {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  width: 100%;
+  height: 40px;
+  border-radius: var(--radius-m);
+  cursor: pointer;
+  background: none;
+  padding: 0;
 }
 
 .controlItem input[type="color"]::-webkit-color-swatch-wrapper {
-    padding: 0;
+  padding: 0;
 }
 
 .controlItem input[type="color"]::-webkit-color-swatch {
-    border: none;
-    border-radius: var(--radius-m);
+  border: none;
+  border-radius: var(--radius-m);
 }
 
 .controlItem select {
-    height: 40px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: var(--radius-m);
-    padding: 0 12px;
-    font-size: 14px;
-    background-color: #fff;
-    outline: none;
-    color: var(--color-text-main);
-    cursor: pointer;
+  height: 40px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-m);
+  padding: 0 12px;
+  font-size: 14px;
+  background-color: #fff;
+  outline: none;
+  color: var(--color-text-main);
+  cursor: pointer;
 }
 
 @media (max-width: 640px) {
-    .qrWorkspace {
-        flex-direction: column;
-    }
+  .qrWorkspace {
+    flex-direction: column;
+  }
 }
